@@ -36,8 +36,8 @@ def main_preprocessing(X_train, X_test, spec_conf):
 
 
 def get_train_test(df, spec_conf):
-    test_size = spec_conf["preprocessing"]["test_size"]
-    random_state =  spec_conf["preprocessing"]["random_state"]
+    test_size = spec_conf["preprocessing"]["train_test_split"]["test_size"]
+    random_state =  spec_conf["preprocessing"]["train_test_split"]["random_state"]
     X, y = split_data(df, spec_conf)
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     X_train.reset_index(drop=True, inplace=True)
