@@ -1,0 +1,38 @@
+{"input_file_name": "data_project.xlsx",
+"unknown_model_surrogate":{
+    "target_column_name": "y_hat",
+    "preprocessing":{
+        "train_test_split":{
+            "test_size": 0.3,
+            "random_state": 42
+        },
+        "ordinal_encoding":{
+            "EmploymentDuration":{
+                "A71": 0, 
+                "A72": 1, 
+                "A73": 2, 
+                "A74": 3, 
+                "A75": 4
+                },
+            "Savings":{
+                "A65": 0, 
+                "A61": 1, 
+                "A62": 2, 
+                "A63": 3, 
+                "A64": 4
+            }
+            },
+        "one_hot_encoding":{
+            "columns": ["CreditHistory", "Housing", "Purpose"]
+        },
+
+        "standard_scaling":{
+            "columns": []
+        },
+
+        "min_max_scaling":{
+            "columns": ["CreditDuration", "CreditAmount", "InstallmentRate", "Age", "NumberOfCredits", "EmploymentDuration", "Savings"]
+        }
+    }
+}
+}
