@@ -5,25 +5,17 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
-def main_preprocessing(df, spec_conf):
-    target_column_name = spec_conf["target_column_name"]
-    test_size = spec_conf["preprocessing"]["train_test_split"]["test_size"]
-    random_state = spec_conf["preprocessing"]["train_test_split"]["random_state"]
+def main_preprocessing(X_train, X_test, spec_conf):
     ordinal_encoding_dic = spec_conf["preprocessing"]["ordinal_encoding"]
     ordinal_encoding_columns = list(ordinal_encoding_dic.keys())
     one_hot_columns = spec_conf["preprocessing"]["one_hot_encoding"]["columns"]
     standard_scale_columns = spec_conf["preprocessing"]["standard_scaling"]["columns"]
     min_max_columns = spec_conf["preprocessing"]["min_max_scaling"]["columns"]
 
-    X, y = split_data(df, target_column_name)
-
-    (   X_train,
-        X_test,
-        y_train,
-        y_test,
-    ) = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
-    )
+    X_train.reset_index(drop=True, inplace=True)
+    X_test.reset_index(drop=True, inplace=True)
+    y_train.reset_index(drop=True, inplace=True)
+    y_test.reset_index(drop=True, inplace=True)
 
     if ordinal_encoding_columns:
         for ordinal_col in ordinal_encoding_columns:
@@ -43,7 +35,20 @@ def main_preprocessing(df, spec_conf):
     return X_train, X_test
 
 
-def split_data(df, target_column_name):
+def get_train_test(df, spec_conf):
+    test_size = spec_conf["preprocessing"]["test_size"]
+    random_state =  spec_conf["preprocessing"]["random_state"]
+    X, y = split_data(df, spec_conf)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    X_train.reset_index(drop=True, inplace=True)
+    X_test.reset_index(drop=True, inplace=True)
+    y_train.reset_index(drop=True, inplace=True)
+    y_test.reset_index(drop=True, inplace=True)
+    return X_train, X_test, y_train, y_test
+
+
+def split_data(df, spec_conf):
+    target_column_name = spec_conf["target_column_name"]
     X = df.drop(columns=[target_column_name])
     y = df[target_column_name]
     return X, y
@@ -61,8 +66,7 @@ def one_hot_encoding(df_train, df_test, one_hot_columns):
     df_encoded_columns_train = pd.DataFrame(
         encoded_columns_train, columns=one_hot_encoder.get_feature_names(one_hot_columns)
     )
-    print(df_encoded_columns_train)
-    print(df_train)
+
     df_train_encoded = pd.concat([df_train, df_encoded_columns_train], axis=1).drop(
         columns=one_hot_columns
     )
