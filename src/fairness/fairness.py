@@ -1,5 +1,12 @@
-from scipy.stats import chisquare
+import matplotlib.pyplot as plt
 import pandas as pd
+from IPython.display import display, Markdown
+from scipy.stats import chisquare
+
+LITERAL_GENDER_CODES = {
+    "0": "Female",
+    "1": "Male",
+}
 
 
 def get_males(data):
@@ -33,35 +40,31 @@ def get_predicted_genders(predictions):
 def compute_statistical_parity(true_data, predictions):
     n = len(predictions)
 
-    observed_f1 = true_data[get_females(true_data) & get_females(predictions)].shape[0]
-    observed_f0 = true_data[get_females(true_data) & get_males(predictions)].shape[0]
-    observed_m1 = true_data[get_males(true_data) & get_females(predictions)].shape[0]
-    observed_m0 = true_data[get_males(true_data) & get_males(predictions)].shape[0]
+    true_males, true_females = get_true_genders(true_data)
+    predicted_males, predicted_females = get_predicted_genders(predictions)
 
-    expected_f1 = (
-        true_data[get_females(true_data)].shape[0] * get_females(predictions).sum() / n
-    )
-    expected_f0 = (
-        true_data[get_females(true_data)].shape[0] * get_males(predictions).sum() / n
-    )
-    expected_m1 = (
-        true_data[get_males(true_data)].shape[0] * get_females(predictions).sum() / n
-    )
-    expected_m0 = (
-        true_data[get_males(true_data)].shape[0] * get_males(predictions).sum() / n
-    )
+    observed_f1 = true_data[true_females & predicted_females].shape[0]
+    observed_f0 = true_data[true_females & predicted_males].shape[0]
+    observed_m1 = true_data[true_males & predicted_females].shape[0]
+    observed_m0 = true_data[true_males & predicted_males].shape[0]
+
+    expected_f1 = true_data[true_females].shape[0] * predicted_females.sum() / n
+    expected_f0 = true_data[true_females].shape[0] * predicted_males.sum() / n
+    expected_m1 = true_data[true_males].shape[0] * predicted_females.sum() / n
+    expected_m0 = true_data[true_males].shape[0] * predicted_males.sum() / n
 
     observed_frequencies = [observed_f1, observed_f0, observed_m1, observed_m0]
-
     expected_frequencies = [expected_f1, expected_f0, expected_m1, expected_m0]
 
-    return chisquare(observed_frequencies, f_exp=expected_frequencies)
+    res = chisquare(observed_frequencies, f_exp=expected_frequencies)
+
+    display(Markdown(f"Computed statistical parity: {res[0]}. p-value: {res[1]}."))
 
 
 def compute_conditional_statistical_parity(true_data, predictions, groups):
     true_males, true_females = get_true_genders(true_data)
     predicted_males, predicted_females = get_predicted_genders(predictions)
-    p_val_cond_stat_par = 0
+    results = dict()
 
     for group in groups:
         individuals_in_group = true_data["Group"] == group
@@ -104,17 +107,21 @@ def compute_conditional_statistical_parity(true_data, predictions, groups):
         observed_frequencies = [observed_f1, observed_f0, observed_m1, observed_m0]
         expected_frequencies = [expected_f1, expected_f0, expected_m1, expected_m0]
 
-        p_val_cond_stat_par += chisquare(
-            observed_frequencies, f_exp=expected_frequencies
-        )[0]
+        res = chisquare(observed_frequencies, f_exp=expected_frequencies)
+        results[group] = {"statistic": res[0], "p-value": res[1]}
 
-    return p_val_cond_stat_par
+    index = map(lambda code: LITERAL_GENDER_CODES[str(code)], results.keys())
+    df_results = pd.DataFrame(data=results.values(), index=index)
+    df_results = df_results.round(2)
+    display(df_results)
+    display(Markdown(f"Summed statistics: {df_results['statistic'].sum()}"))
+    display(Markdown(f"Summed p-values: {df_results['p-value'].sum()}"))
 
 
 def compute_equalized_odds(true_data, predictions, y_vals):
     true_males, true_females = get_true_genders(true_data)
     predicted_males, predicted_females = get_predicted_genders(predictions)
-    p_val_eq_odds = 0
+    results = dict()
 
     for val in y_vals:
         individuals_y_val = true_data["CreditRisk (y)"] == val
@@ -157,7 +164,60 @@ def compute_equalized_odds(true_data, predictions, y_vals):
         observed_frequencies = [observed_f1, observed_f0, observed_m1, observed_m0]
         expected_frequencies = [expected_f1, expected_f0, expected_m1, expected_m0]
 
-        p_val = chisquare(observed_frequencies, f_exp=expected_frequencies)[0]
-        p_val_eq_odds += p_val
+        res = chisquare(observed_frequencies, f_exp=expected_frequencies)
+        results[val] = {"statistic": res[0], "p-value": res[1]}
 
-    return p_val_eq_odds
+    df_results = pd.DataFrame(data=results.values(), index=results.keys())
+    df_results = df_results.round(2)
+    display(df_results)
+    display(Markdown(f"Summed statistics: {df_results['statistic'].sum()}"))
+    display(Markdown(f"Summed p-values: {df_results['p-value'].sum()}"))
+
+
+def make_fpdp(
+    data,
+    X_test,
+    best_estimator,
+    predictions,
+    chosen_column,
+):
+    min_val = X_test[chosen_column].min()
+    max_val = X_test[chosen_column].max()
+    range_column = list(range(min_val, max_val))
+
+    statistics = []
+    for val in range_column:
+        X_test_copy = X_test.copy()
+        X_test_copy[chosen_column] = val
+
+        predictions = best_estimator.predict(X_test_copy)
+        true_data = data.loc[X_test_copy.index, :]
+
+        true_males, true_females = get_true_genders(true_data)
+        predicted_males, predicted_females = get_predicted_genders(predictions)
+
+        observed_f1 = true_data[true_females & predicted_females].shape[0]
+        observed_f0 = true_data[true_females & predicted_males].shape[0]
+        observed_m1 = true_data[true_males & predicted_females].shape[0]
+        observed_m0 = true_data[true_males & predicted_males].shape[0]
+
+        n = len(predictions)
+        expected_f1 = true_data[true_females].shape[0] * predicted_females.sum() / n
+        expected_f0 = true_data[true_females].shape[0] * predicted_males.sum() / n
+        expected_m1 = true_data[true_males].shape[0] * predicted_females.sum() / n
+        expected_m0 = true_data[true_males].shape[0] * predicted_males.sum() / n
+
+        observed_frequencies = [observed_f1, observed_f0, observed_m1, observed_m0]
+        expected_frequencies = [expected_f1, expected_f0, expected_m1, expected_m0]
+
+        p_val = chisquare(
+            observed_frequencies,
+            f_exp=expected_frequencies,
+        )[0]
+        statistics.append(p_val)
+
+    plt.figure(figsize=(12, 12))
+    plt.scatter(range_column, statistics)
+    plt.xlabel(f"{chosen_column}")
+    plt.ylabel("Statistical parity")
+    plt.show()
