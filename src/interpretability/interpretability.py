@@ -2,7 +2,7 @@ from PyALE import ale
 from pdpbox import pdp
 from sklearn.inspection import PartialDependenceDisplay
 import pandas as pd
-
+import src.constants as cst
 
 def plot_ale_effect(estimator, X_train: pd.DataFrame, feature: str, grid_size=20):
     """Returns ale plot
@@ -22,10 +22,10 @@ def plot_ale_effect(estimator, X_train: pd.DataFrame, feature: str, grid_size=20
         feature=[feature],
         grid_size=grid_size,
         include_CI=True,
-        C=0.9,
+        C=0.9
     )
 
-def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str, feature_name):
+def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str):
     """Plots the PDP isolation plot
 
     Args:
@@ -45,21 +45,44 @@ def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str, feature_
         num_grid_points=20
     )
 
-    fig, _ = pdp.pdp_plot(pdp_isolate_out=pdp_feature, feature_name=feature_name)
+    fig, _ = pdp.pdp_plot(pdp_isolate_out=pdp_feature, feature_name=feature)
     fig.show()
 
-def pdp_ice_plot(estimator, X_train: pd.DataFrame, feature_n: str, nb_sample: int):
+def plot_ice(estimator, X_train: pd.DataFrame, feature: str, nb_sample: int):
+    """Plots the ICE curves
+
+    Args:
+        estimator ([type]): model
+        X_train (pd.DataFrame): dataframe of X training set
+        feature (str): feature for which you want to plot the PDP
+        nb_sample: absolute number of samples for ICE curves 
+
+    Returns:
+        plot: returns plot
+    """
+    pdp_feature = pdp.pdp_isolate(
+        model=estimator, 
+        dataset=X_train, 
+        model_features=X_train.columns, 
+        feature=feature, 
+        num_grid_points=20,
+    )
+
+    fig, _ = pdp.pdp_plot(pdp_isolate_out=pdp_feature, feature_name=feature, plot_lines=True, center=True, frac_to_plot=nb_sample)
+    fig.show()
+
+def pdp_ice_plot_sklearn(estimator, X_train: pd.DataFrame, feature_n: str, nb_sample: int):
     """Plots the ICE centered curves overlayed with the PDP
 
     Args:
         estimator ([type]): model
         X_train (pd.DataFrame): dataframe of X training set
         feature (str): feature for which you want to plot the ICE
-        nb_sample: sampling for ICE curves (int: absolute number of samples or float: proportion of dataset to use)
+        nb_sample: absolute number of samples for ICE curves 
 
     Returns:
         plot: returns plot
     """
     fig = PartialDependenceDisplay.from_estimator(estimator=estimator, X=X_train, 
-                                                  features=[feature_n], kind='both', subsample=nb_sample)
+                                                  features=[feature_n], kind='both', subsample=nb_sample, random_state=cst.random_state)
     return fig
