@@ -6,11 +6,12 @@ import pandas as pd
 from sklearn.model_selection import KFold, RandomizedSearchCV
 from xgboost import XGBClassifier
 
-import constants as cst
+import src.constants as cst
 
 logger = logging.getLogger(__name__)
 
 def randomized_search_from_xgb_classifier(
+    pipeline,
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Tuple[dict, float]:
     """Function to run a grid search for a XGBClassifier
@@ -23,8 +24,8 @@ def randomized_search_from_xgb_classifier(
         dict: best parameters
         float: best score
     """
-    clf = XGBClassifier(eval_metric="logloss", use_label_encoder=False) 
-    best_estimator, best_score = randomized_search_from_estimator_and_params(X_train, y_train, clf, cst.xgb_param_dist)
+    #pip = XGBClassifier(eval_metric="logloss", use_label_encoder=False) 
+    best_estimator, best_score = randomized_search_from_estimator_and_params(X_train, y_train, pipeline, cst.xgb_param_dist)
     return best_estimator, best_score
 
 

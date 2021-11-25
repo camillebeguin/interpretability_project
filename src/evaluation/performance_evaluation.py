@@ -5,7 +5,7 @@ import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-import constants as cst
+import src.constants as cst
 
 logger = logging.getLogger(__name__)
 

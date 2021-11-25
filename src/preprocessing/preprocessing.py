@@ -48,7 +48,6 @@ def split_data(df, target_column_name):
     y = df[target_column_name]
     return X, y
 
-
 def ordinal_encoding(df, column_name, encoding_dic):
     df.loc[:, column_name] = df.loc[:, column_name].map(encoding_dic)
     return df
