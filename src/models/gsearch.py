@@ -10,6 +10,7 @@ import constants as cst
 
 logger = logging.getLogger(__name__)
 
+
 def randomized_search_from_xgb_classifier(
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Tuple[dict, float]:
@@ -23,8 +24,10 @@ def randomized_search_from_xgb_classifier(
         dict: best parameters
         float: best score
     """
-    clf = XGBClassifier(eval_metric="logloss", use_label_encoder=False) 
-    best_estimator, best_score = randomized_search_from_estimator_and_params(X_train, y_train, clf, cst.xgb_param_dist)
+    clf = XGBClassifier(eval_metric="logloss", use_label_encoder=False)
+    best_estimator, best_score = randomized_search_from_estimator_and_params(
+        X_train, y_train, clf, cst.xgb_param_dist
+    )
     return best_estimator, best_score
 
 
@@ -50,10 +53,10 @@ def randomized_search_from_estimator_and_params(
         param_distributions=params_dist,
         cv=gkf,
         n_iter=20,
-        scoring='roc_auc',
+        scoring="roc_auc",
         error_score=0,
         verbose=-1,
-        n_jobs=-1
+        n_jobs=-1,
     )
 
     best_model = gsearch.fit(X=X_train, y=y_train)

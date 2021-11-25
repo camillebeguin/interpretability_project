@@ -7,20 +7,18 @@
             "random_state": 42
         },
         "ordinal_encoding":{
-            "EmploymentDuration":{
+            "EmploymentDuration": {
                 "A71": 0, 
                 "A72": 1, 
                 "A73": 2, 
                 "A74": 3, 
-                "A75": 4
-                },
-            "Savings":{
+                "A75": 4},
+            "Savings": {
                 "A65": 0, 
                 "A61": 1, 
                 "A62": 2, 
                 "A63": 3, 
-                "A64": 4
-            }
+                "A64": 4}
             },
         "one_hot_encoding":{
             "columns": ["CreditHistory", "Housing", "Purpose"]
