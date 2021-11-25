@@ -114,8 +114,6 @@ def compute_conditional_statistical_parity(true_data, predictions, groups):
     df_results = pd.DataFrame(data=results.values(), index=index)
     df_results = df_results.round(2)
     display(df_results)
-    display(Markdown(f"Summed statistics: {df_results['statistic'].sum()}"))
-    display(Markdown(f"Summed p-values: {df_results['p-value'].sum()}"))
 
 
 def compute_equalized_odds(true_data, predictions, y_vals):
@@ -170,8 +168,6 @@ def compute_equalized_odds(true_data, predictions, y_vals):
     df_results = pd.DataFrame(data=results.values(), index=results.keys())
     df_results = df_results.round(2)
     display(df_results)
-    display(Markdown(f"Summed statistics: {df_results['statistic'].sum()}"))
-    display(Markdown(f"Summed p-values: {df_results['p-value'].sum()}"))
 
 
 def make_fpdp(
