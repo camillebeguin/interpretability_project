@@ -3,6 +3,7 @@
     "target_column_name": "y_hat",
     "numerical_columns": ["CreditDuration", "CreditAmount", "InstallmentRate", "Age", "NumberOfCredits"],
     "categorical_columns": ["EmploymentDuration", "Savings", "CreditHistory", "Housing", "Purpose"],
+    "drop_columns": ["CreditRisk (y)"],
     "preprocessing":{
         "train_test_split":{
             "test_size": 0.3,
@@ -39,6 +40,7 @@
     "target_column_name": "CreditRisk (y)",
     "numerical_columns": ["CreditDuration", "CreditAmount", "InstallmentRate", "Age", "NumberOfCredits"],
     "categorical_columns": ["EmploymentDuration", "Savings", "CreditHistory", "Housing", "Purpose"],
+    "drop_columns": ["y_hat"],
     "sampling": {
         "sampling_ratio": 0.6
     },
