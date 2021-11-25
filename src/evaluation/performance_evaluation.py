@@ -5,6 +5,7 @@ import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import r2_score, mean_squared_error
 import src.constants as cst
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ def custom_cross_evaluate(
     return scores
 
 
-def compute_performance_metrics(y_true, y_pred):
+def compute_classification_performance_metrics(y_true, y_pred):
     most_common_class_count = np.sum(np.array(y_true) == cst.most_common_class)
     benchmark_score = most_common_class_count / len(y_true)
 
@@ -40,6 +41,16 @@ def compute_performance_metrics(y_true, y_pred):
             "recall": [recall_score(y_true, y_pred)],
             "F1 score": [f1_score(y_true, y_pred)],
             "ROC AUC score": [roc_auc_score(y_true, y_pred)],
+        }
+    )
+    return metrics
+
+def compute_regression_performance_metrics(y_true, y_pred):
+
+    metrics = pd.DataFrame(
+        {
+            "R2 score": [r2_score(y_true, y_pred)],
+            "RMSE": [np.sqrt(mean_squared_error(y_true, y_pred))]
         }
     )
     return metrics

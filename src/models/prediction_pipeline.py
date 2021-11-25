@@ -17,7 +17,6 @@ def build_prediction_pipeline(estimator, spec_conf):
     standard_scaling_columns = spec_conf["preprocessing"]["standard_scaling"]["columns"]
     min_max_columns = spec_conf["preprocessing"]["min_max_scaling"]["columns"]
     one_hot_columns = spec_conf["preprocessing"]["one_hot_encoding"]["columns"]
-    ordinal_columns = ["Savings", "EmploymentDuration"]
     
     encoder = create_column_encoder(
         one_hot_columns, min_max_columns, standard_scaling_columns
