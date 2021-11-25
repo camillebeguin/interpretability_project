@@ -10,6 +10,7 @@ import src.constants as cst
 
 logger = logging.getLogger(__name__)
 
+
 def randomized_search_from_xgb_classifier(
     pipeline,
     X_train: pd.DataFrame, y_train: pd.Series
@@ -51,10 +52,10 @@ def randomized_search_from_estimator_and_params(
         param_distributions=params_dist,
         cv=gkf,
         n_iter=20,
-        scoring='roc_auc',
+        scoring="roc_auc",
         error_score=0,
         verbose=-1,
-        n_jobs=-1
+        n_jobs=-1,
     )
 
     best_model = gsearch.fit(X=X_train, y=y_train)
