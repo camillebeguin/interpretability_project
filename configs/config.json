@@ -1,6 +1,7 @@
 {"input_file_name": "data_project.xlsx",
 "unknown_model_surrogate":{
     "target_column_name": "y_hat",
+    "drop_columns": "CreditRisk (y)",
     "numerical_columns": ["CreditDuration", "CreditAmount", "InstallmentRate", "Age", "NumberOfCredits"],
     "categorical_columns": ["EmploymentDuration", "Savings", "CreditHistory", "Housing", "Purpose"],
     "preprocessing":{
@@ -35,8 +36,9 @@
         }
     }
 }, 
-"classification_model_surrogate": {
+"classification_model": {
     "target_column_name": "CreditRisk (y)",
+    "drop_columns": "y_hat",
     "numerical_columns": ["CreditDuration", "CreditAmount", "InstallmentRate", "Age", "NumberOfCredits"],
     "categorical_columns": ["EmploymentDuration", "Savings", "CreditHistory", "Housing", "Purpose"],
     "sampling": {
