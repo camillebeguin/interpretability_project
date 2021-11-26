@@ -11,7 +11,7 @@ most_common_class = 1
 
 # Model parameters from the config file
 unknown_surrogate_model_parameters = conf["unknown_model_surrogate"]
-classification_model_parameters = conf["classification_model_surrogate"]
+classification_model_parameters = conf["classification_model"]
 
 # Model parameter grid for randomized search
 xgb_param_dist = {'n_estimators': stats.randint(150, 1000),

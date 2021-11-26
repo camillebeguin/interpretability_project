@@ -34,6 +34,7 @@ def split_data(df, spec_conf):
     y = df[spec_conf["target_column_name"]]
     return X, y
 
+
 def one_hot_encoding(df_train, df_test, spec_conf):
     one_hot_encoder = OneHotEncoder(sparse=False, drop="first", handle_unknown="ignore")
 
@@ -55,13 +56,16 @@ def one_hot_encoding(df_train, df_test, spec_conf):
     )
     return df_train_encoded, df_test_encoded
 
+
 def standard_scaling(df_train, df_test, standard_scale_columns):
     standard_scaler = StandardScaler()
     df_train[standard_scale_columns] = standard_scaler.fit_transform(df_train[standard_scale_columns])
     df_test[standard_scale_columns] = standard_scaler.transform(df_test[standard_scale_columns])
     return df_train, df_test
 
-def min_max_scaling(df_train, df_test, min_max_columns):
+
+def min_max_scaling(df_train, df_test, spec_conf):
+    min_max_columns = spec_conf["preprocessing"]["min_max_scaling"]["columns"]
     min_max_scaler = MinMaxScaler()
     df_train[min_max_columns] = min_max_scaler.fit_transform(df_train[min_max_columns])
     df_test[min_max_columns] = min_max_scaler.transform(df_test[min_max_columns])
