@@ -25,7 +25,7 @@ def plot_ale_effect(estimator, X_train: pd.DataFrame, feature: str, grid_size=20
         C=0.9
     )
 
-def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str):
+def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str, feature_name: str):
     """Plots the PDP isolation plot
 
     Args:
@@ -45,7 +45,7 @@ def plot_univariate_pdp(estimator, X_train: pd.DataFrame, feature: str):
         num_grid_points=20
     )
 
-    fig, _ = pdp.pdp_plot(pdp_isolate_out=pdp_feature, feature_name=feature)
+    fig, _ = pdp.pdp_plot(pdp_isolate_out=pdp_feature, feature_name=feature_name)
     fig.show()
 
 def plot_ice(estimator, X_train: pd.DataFrame, feature: str, nb_sample: int):
